@@ -127,6 +127,9 @@ resource "aws_route_table_association" "sbcntr_route_db_association1" {
 # transit_gateway_id = aws_ec2_transit_gateway.example.id
 # }
 
+# Security groups
+
+## インターネット公開のセキュリティグループ
 resource "aws_security_group" "sbcntr_sg_ingress" {
   description = "Security group for ingress"
   name        = "ingress"
@@ -167,6 +170,7 @@ resource "aws_security_group_rule" "sbcntr_sg_ingress_in_http_ipv6" {
 }
 
 
+## バックエンドコンテナアプリ用セキュリティグループ
 resource "aws_security_group" "sbcntr_sg_container" {
   description = "Security Group of backend app"
   name        = "container"
@@ -183,22 +187,27 @@ resource "aws_security_group" "sbcntr_sg_container" {
   }
 }
 
+## フロントエンドコンテナアプリ用セキュリティグループ
 resource "aws_security_group" "sbcntr_sg_front_container" {
   description = "Security Group of front container app"
   name        = "front-container"
-  egress {
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic by default"
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-  }
+  vpc_id      = aws_vpc.sbcntr_vpc.id
   tags = {
     Name = "sbcntr-sg-front-container"
   }
-  vpc_id = aws_vpc.sbcntr_vpc.id
 }
 
+resource "aws_security_group_rule" "sbcntr_sg_front_container_out" {
+  security_group_id = aws_security_group.sbcntr_sg_front_container.id
+  type              = "egress"
+  protocol          = "-1"
+  from_port         = 0
+  to_port           = 0
+  cidr_blocks       = ["0.0.0.0/0"]
+  description       = "Allow all outbound traffic by default"
+}
+
+## 内部用ロードバランサ用のセキュリティグループ
 resource "aws_security_group" "sbcntr_sg_internal" {
   description = "Security group for internal load balancer"
   name        = "internal"
@@ -215,6 +224,7 @@ resource "aws_security_group" "sbcntr_sg_internal" {
   vpc_id = aws_vpc.sbcntr_vpc.id
 }
 
+## DB用セキュリティグループ
 resource "aws_security_group" "sbcntr_sg_db" {
   description = "Security Group of database"
   name        = "database"
@@ -231,47 +241,59 @@ resource "aws_security_group" "sbcntr_sg_db" {
   vpc_id = aws_vpc.sbcntr_vpc.id
 }
 
-resource "aws_security_group" "sbcntr_sg_front_container_froms_sg_ingress" {
-  # CF Property(IpProtocol) = "tcp"
-  description = "HTTP for Ingress"
-  # CF Property(FromPort) = 80
-  # CF Property(GroupId) = aws_security_group.sbcntr_sg_front_container.id
-  vpc_id = aws_security_group.sbcntr_sg_ingress.id
-  # CF Property(ToPort) = 80
+# ルール紐付け
+
+## Internet LB -> Front Container
+resource "aws_security_group_rule" "sbcntr_sg_front_container_froms_sg_ingress" {
+  security_group_id        = aws_security_group.sbcntr_sg_front_container.id
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 80
+  to_port                  = 80
+  source_security_group_id = aws_security_group.sbcntr_sg_ingress.id
+  description              = "HTTP for Ingress"
 }
 
-resource "aws_security_group" "sbcntr_sg_internal_from_sg_front_container" {
-  # CF Property(IpProtocol) = "tcp"
-  description = "HTTP for front container"
-  # CF Property(FromPort) = 80
-  # CF Property(GroupId) = aws_security_group.sbcntr_sg_internal.id
-  vpc_id = aws_security_group.sbcntr_sg_front_container.id
-  # CF Property(ToPort) = 80
+## Front Container -> Internal LB
+resource "aws_security_group_rule" "sbcntr_sg_internal_from_sg_front_container" {
+  security_group_id        = aws_security_group.sbcntr_sg_internal.id
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 80
+  to_port                  = 80
+  source_security_group_id = aws_security_group.sbcntr_sg_front_container.id
+  description              = "HTTP for front container"
 }
 
-resource "aws_security_group" "sbcntr_sg_container_from_sg_internal" {
-  # CF Property(IpProtocol) = "tcp"
-  description = "HTTP for internal lb"
-  # CF Property(FromPort) = 80
-  # CF Property(GroupId) = aws_security_group.sbcntr_sg_container.id
-  vpc_id = aws_security_group.sbcntr_sg_internal.id
-  # CF Property(ToPort) = 80
+## Internal LB -> Back Container
+resource "aws_security_group_rule" "sbcntr_sg_container_from_sg_internal" {
+  security_group_id        = aws_security_group.sbcntr_sg_container.id
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 80
+  to_port                  = 80
+  source_security_group_id = aws_security_group.sbcntr_sg_internal.id
+  description              = "HTTP for internal lb"
 }
 
-resource "aws_security_group" "sbcntr_sg_db_from_sg_container_tcp" {
-  # CF Property(IpProtocol) = "tcp"
-  description = "MySQL protocol from backend App"
-  # CF Property(FromPort) = 3306
-  # CF Property(GroupId) = aws_security_group.sbcntr_sg_db.id
-  vpc_id = aws_security_group.sbcntr_sg_container.id
-  # CF Property(ToPort) = 3306
+## Back container -> DB
+resource "aws_security_group_rule" "sbcntr_sg_db_from_sg_container_tcp" {
+  security_group_id        = aws_security_group.sbcntr_sg_db.id
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 3306
+  to_port                  = 3306
+  source_security_group_id = aws_security_group.sbcntr_sg_container.id
+  description              = "MySQL protocol from backend App"
 }
 
-resource "aws_security_group" "sbcntr_sg_db_from_sg_front_container_tcp" {
-  # CF Property(IpProtocol) = "tcp"
-  description = "MySQL protocol from frontend App"
-  # CF Property(FromPort) = 3306
-  # CF Property(GroupId) = aws_security_group.sbcntr_sg_db.id
-  vpc_id = aws_security_group.sbcntr_sg_front_container.id
-  # CF Property(ToPort) = 3306
+## Front container -> DB
+resource "aws_security_group_rule" "sbcntr_sg_db_from_sg_front_container_tcp" {
+  security_group_id        = aws_security_group.sbcntr_sg_db.id
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 3306
+  to_port                  = 3306
+  source_security_group_id = aws_security_group.sbcntr_sg_front_container.id
+  description              = "MySQL protocol from frontend App"
 }
