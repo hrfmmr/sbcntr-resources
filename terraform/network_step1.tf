@@ -265,6 +265,26 @@ resource "aws_security_group_rule" "sbcntr_sg_internal_from_sg_front_container" 
   description              = "HTTP for front container"
 }
 
+## Bastion -> Internal LB
+resource "aws_security_group_rule" "sbcntr_sg_internal_from_bastion" {
+  security_group_id        = aws_security_group.sbcntr_sg_internal.id
+  type                     = "ingress"
+  from_port                = 10080
+  to_port                  = 10080
+  source_security_group_id = aws_security_group.sbcntr_sg_bastion.id
+  protocol                 = "tcp"
+  description              = "HTTP for bastion"
+}
+resource "aws_security_group_rule" "sbcntr_sg_internal_from_bastion_debug" {
+  security_group_id        = aws_security_group.sbcntr_sg_internal.id
+  type                     = "ingress"
+  from_port                = 20080
+  to_port                  = 20080
+  source_security_group_id = aws_security_group.sbcntr_sg_bastion.id
+  protocol                 = "tcp"
+  description              = "Debug HTTP for bastion"
+}
+
 ## Internal LB -> Back Container
 resource "aws_security_group_rule" "sbcntr_sg_container_from_sg_internal" {
   security_group_id        = aws_security_group.sbcntr_sg_container.id
