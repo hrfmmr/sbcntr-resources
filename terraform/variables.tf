@@ -1,3 +1,10 @@
+data "aws_caller_identity" "current" {}
+
+variable "aws_region" {
+  type    = string
+  default = "ap-northeast-1"
+}
+
 variable "ssh_public_key" {
   type = string
 }

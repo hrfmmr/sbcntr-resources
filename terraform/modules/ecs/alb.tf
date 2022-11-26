@@ -8,10 +8,7 @@ resource "aws_lb" "internal" {
     aws_security_group.sbcntr_sg_internal.id
   ]
 
-  subnets = [
-    aws_subnet.sbcntr_subnet_private_container1["a"].id,
-    aws_subnet.sbcntr_subnet_private_container1["c"].id,
-  ]
+  subnets = var.subnet_ids
 }
 
 # 🔍
@@ -31,10 +28,11 @@ resource "aws_lb_listener" "debug_internal" {
 }
 
 resource "aws_lb_target_group" "internal_blue" {
-  name     = "sbcntr-tg-sbcntrdemo-blue"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.sbcntr_vpc.id
+  name        = "sbcntr-tg-sbcntrdemo-blue"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
 
   health_check {
     interval            = 15
@@ -57,13 +55,21 @@ resource "aws_lb_listener" "internal_blue" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.internal_blue.arn
   }
+
+  # Target group can be switched between Blue<->Green
+  lifecycle {
+    ignore_changes = [
+      default_action,
+    ]
+  }
 }
 
 resource "aws_lb_target_group" "internal_green" {
-  name     = "sbcntr-tg-sbcntrdemo-green"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.sbcntr_vpc.id
+  name        = "sbcntr-tg-sbcntrdemo-green"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
 
   health_check {
     interval            = 15
