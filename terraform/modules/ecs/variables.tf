@@ -21,6 +21,12 @@ variable "sg_bastion_id" {
   type = string
 }
 
+# CodeDeploy
+variable "codedeploy_trust_policy" {
+  type    = string
+  default = "./modules/ecs/files/iam_policy/codedeploy_trust_policy.json"
+}
+
 # ECS
 variable "ecs_task_trust_policy" {
   type    = string
