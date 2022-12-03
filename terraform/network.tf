@@ -65,8 +65,26 @@ resource "aws_subnet" "sbcntr_subnet_private_container1" {
   cidr_block              = each.value
   availability_zone       = "ap-northeast-1${each.key}"
   map_public_ip_on_launch = true
+
   tags = {
     Name = "sbcntr-subnet-private-container-1${each.key}"
+    Type = "Isolated"
+  }
+}
+
+# Private subnet(VPC endpoint)
+resource "aws_subnet" "sbcntr_subnet_private_egress1" {
+  for_each = {
+    "a" = "10.0.248.0/24"
+    "c" = "10.0.249.0/24"
+  }
+  vpc_id                  = aws_vpc.sbcntr_vpc.id
+  cidr_block              = each.value
+  availability_zone       = "ap-northeast-1${each.key}"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "sbcntr-subnet-private-egress-1${each.key}"
     Type = "Isolated"
   }
 }
@@ -98,6 +116,7 @@ resource "aws_subnet" "sbcntr_subnet_private_db1" {
   cidr_block              = each.value
   availability_zone       = "ap-northeast-1${each.key}"
   map_public_ip_on_launch = false
+
   tags = {
     Name = "sbcntr-subnet-private-db-1${each.key}"
     Type = "Isolated"
@@ -131,8 +150,10 @@ resource "aws_route_table_association" "sbcntr_route_db_association1" {
 
 ## DB用セキュリティグループ
 resource "aws_security_group" "sbcntr_sg_db" {
-  description = "Security Group of database"
   name        = "database"
+  description = "Security Group of database"
+  vpc_id      = aws_vpc.sbcntr_vpc.id
+
   egress {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow all outbound traffic by default"
@@ -140,10 +161,10 @@ resource "aws_security_group" "sbcntr_sg_db" {
     from_port   = 0
     to_port     = 0
   }
+
   tags = {
     Name = "sbcntr-sg-db"
   }
-  vpc_id = aws_vpc.sbcntr_vpc.id
 }
 
 # ルール紐付け

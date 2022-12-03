@@ -16,6 +16,10 @@ variable "subnet_ids" {
   type = list(string)
 }
 
+variable "sg_egress_id" {
+  type = string
+}
+
 # Bastion
 variable "sg_bastion_id" {
   type = string

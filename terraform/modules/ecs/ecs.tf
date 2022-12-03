@@ -1,3 +1,14 @@
+# CloudWatch
+resource "aws_cloudwatch_log_group" "sbcntr" {
+  for_each = {
+    frontend_task_def = local.task_def.frontend
+    backend_task_def  = local.task_def.backend
+  }
+
+  name = each.value.cwlogs_group
+}
+
+# IAM
 resource "aws_iam_role" "task_exec" {
   name               = "sbcntr-task-exec-role"
   assume_role_policy = file(var.ecs_task_trust_policy)
@@ -8,6 +19,7 @@ resource "aws_iam_role_policy_attachment" "AmazonECSTaskExecutionRolePolicy" {
   role       = aws_iam_role.task_exec.id
 }
 
+# ECS
 resource "aws_ecs_task_definition" "sbcntr" {
   for_each = {
     frontend = local.task_def.frontend
@@ -30,6 +42,10 @@ resource "aws_ecs_task_definition" "sbcntr" {
   network_mode = "awsvpc"
 
   execution_role_arn = aws_iam_role.task_exec.arn
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "aws_ecs_cluster" "sbcntr_backend" {
