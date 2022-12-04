@@ -135,11 +135,21 @@ resource "aws_security_group_rule" "sbcntr_sg_container_from_sg_internal" {
 resource "aws_security_group_rule" "sbcntr_sg_internal_from_bastion" {
   security_group_id        = aws_security_group.sbcntr_sg_internal.id
   type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 80
+  to_port                  = 80
+  source_security_group_id = var.sg_bastion_id
+  description              = "HTTP for internal LB from bastion"
+}
+
+resource "aws_security_group_rule" "sbcntr_sg_internal_from_bastion_test" {
+  security_group_id        = aws_security_group.sbcntr_sg_internal.id
+  type                     = "ingress"
   from_port                = 10080
   to_port                  = 10080
   source_security_group_id = var.sg_bastion_id
   protocol                 = "tcp"
-  description              = "HTTP for bastion"
+  description              = "Test HTTP for internal LB from bastion"
 }
 
 resource "aws_security_group_rule" "sbcntr_sg_internal_from_bastion_debug" {
@@ -149,7 +159,7 @@ resource "aws_security_group_rule" "sbcntr_sg_internal_from_bastion_debug" {
   to_port                  = 20080
   source_security_group_id = var.sg_bastion_id
   protocol                 = "tcp"
-  description              = "Debug HTTP for bastion"
+  description              = "Debug HTTP for internal LB from bastion"
 }
 
 ## Back Container -> VPC Endpoint
