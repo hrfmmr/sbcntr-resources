@@ -18,40 +18,23 @@ resource "aws_security_group" "sbcntr_sg_egress" {
 }
 
 # VPC Endpoint
-## IF/ecr.api
-resource "aws_vpc_endpoint" "sbcntr_vpce_ecr_api" {
+
+## Interface
+resource "aws_vpc_endpoint" "sbcntr_vpce" {
+  for_each = toset(var.vpc_interface_endpoints)
+
   vpc_id              = aws_vpc.sbcntr_vpc.id
-  service_name        = "com.amazonaws.ap-northeast-1.ecr.api"
+  service_name        = "com.amazonaws.${var.aws_region}.${each.value}"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = values(aws_subnet.sbcntr_subnet_private_egress1)[*].id
   security_group_ids  = [aws_security_group.sbcntr_sg_egress.id]
   private_dns_enabled = true
 }
 
-## IF/ecr.dkr
-resource "aws_vpc_endpoint" "sbcntr_vpce_ecr_dkr" {
-  vpc_id              = aws_vpc.sbcntr_vpc.id
-  service_name        = "com.amazonaws.ap-northeast-1.ecr.dkr"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = values(aws_subnet.sbcntr_subnet_private_egress1)[*].id
-  security_group_ids  = [aws_security_group.sbcntr_sg_egress.id]
-  private_dns_enabled = true
-}
-
-## IF/logs
-resource "aws_vpc_endpoint" "logs" {
-  vpc_id              = aws_vpc.sbcntr_vpc.id
-  service_name        = "com.amazonaws.ap-northeast-1.logs"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = values(aws_subnet.sbcntr_subnet_private_egress1)[*].id
-  security_group_ids  = [aws_security_group.sbcntr_sg_egress.id]
-  private_dns_enabled = true
-}
-
-## GW/s3
+## Gateway
 resource "aws_vpc_endpoint" "sbcntr_vpce_s3" {
   vpc_id            = aws_vpc.sbcntr_vpc.id
-  service_name      = "com.amazonaws.ap-northeast-1.s3"
+  service_name      = "com.amazonaws.${var.aws_region}.s3"
   vpc_endpoint_type = "Gateway"
 }
 

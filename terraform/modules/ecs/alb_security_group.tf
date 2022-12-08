@@ -65,25 +65,6 @@ resource "aws_security_group" "sbcntr_sg_front_container" {
   name        = "front-container"
   vpc_id      = var.vpc_id
 
-  tags = {
-    Name = "sbcntr-sg-front-container"
-  }
-}
-
-resource "aws_security_group_rule" "sbcntr_sg_front_container_out" {
-  security_group_id = aws_security_group.sbcntr_sg_front_container.id
-  type              = "egress"
-  protocol          = "-1"
-  from_port         = 0
-  to_port           = 0
-  cidr_blocks       = ["0.0.0.0/0"]
-  description       = "Allow all outbound traffic by default"
-}
-
-## Internal LB
-resource "aws_security_group" "sbcntr_sg_internal" {
-  description = "Security group for internal load balancer"
-  name        = "internal"
   egress {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow all outbound traffic by default"
@@ -91,14 +72,33 @@ resource "aws_security_group" "sbcntr_sg_internal" {
     from_port   = 0
     to_port     = 0
   }
+
+  tags = {
+    Name = "sbcntr-sg-front-container"
+  }
+}
+
+## Internal LB
+resource "aws_security_group" "sbcntr_sg_internal" {
+  description = "Security group for internal load balancer"
+  name        = "internal"
+  vpc_id      = var.vpc_id
+
+  egress {
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound traffic by default"
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+  }
+
   tags = {
     Name = "sbcntr-sg-internal"
   }
-  vpc_id = var.vpc_id
 }
 
 
-## Internet LB -> Front Container
+## Internet-facing LB -> Front Container
 resource "aws_security_group_rule" "sbcntr_sg_front_container_from_sg_ingress" {
   security_group_id        = aws_security_group.sbcntr_sg_front_container.id
   type                     = "ingress"

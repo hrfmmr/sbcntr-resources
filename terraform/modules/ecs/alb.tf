@@ -1,3 +1,53 @@
+# Internet-facing ALB
+resource "aws_lb" "ingress" {
+  name               = "sbcntr-alb-ingress-frontend"
+  load_balancer_type = "application"
+  internal           = false
+
+  security_groups = [
+    aws_security_group.sbcntr_sg_ingress.id
+  ]
+
+  subnets = var.public_subnet_ids
+}
+
+resource "aws_lb_target_group" "frontend" {
+  name        = "sbcntr-tg-frontend"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    interval            = 15
+    path                = "/healthcheck"
+    port                = 80
+    protocol            = "HTTP"
+    timeout             = 5
+    healthy_threshold   = 3
+    unhealthy_threshold = 2
+    matcher             = 200
+  }
+}
+
+resource "aws_lb_listener" "frontend" {
+  load_balancer_arn = aws_lb.ingress.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend.arn
+  }
+
+  # Target group can be switched between Blue<->Green
+  lifecycle {
+    ignore_changes = [
+      default_action,
+    ]
+  }
+}
+
 # Internal ALB(frontend-app -> internal ALB)
 resource "aws_lb" "internal" {
   name               = "sbcntr-alb-internal"
