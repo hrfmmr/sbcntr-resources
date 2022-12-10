@@ -1,3 +1,4 @@
+# Don't include ECR defs to tfstate
 locals {
   ecr-lifecycle-policy = {
     rules = [

@@ -39,6 +39,11 @@ resource "aws_vpc_endpoint" "sbcntr_vpce_s3" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "sbcntr_route_private_s3" {
+  for_each = {
+    "a" = "1"
+    "c" = "2"
+  }
+
   vpc_endpoint_id = aws_vpc_endpoint.sbcntr_vpce_s3.id
-  route_table_id  = aws_route_table.sbcntr_route_app.id
+  route_table_id  = aws_route_table.sbcntr_route_app[each.key].id
 }
