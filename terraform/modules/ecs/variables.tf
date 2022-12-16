@@ -64,13 +64,13 @@ locals {
       name               = "sbcntr-frontend-def"
       container_def_file = "./modules/ecs/files/ecs_task/ecs_task_frontend.json"
       container_name     = "app"
-      image_url          = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/sbcntr-frontend:v1"
+      image_url          = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/sbcntr-frontend:v2"
       cwlogs_group       = "/ecs/sbcntr-frontend-def"
       cwlogs_prefix      = "ecs"
       environment = [
         { name = "SESSION_SECRET_KEY", value = "41b678c65b37bf99c37bcab522802760" },
-        { name = "APP_SERVICE_HOST", value = aws_lb.internal.dns_name },
-        { name = "NOTIF_SERVICE_HOST", value = aws_lb.internal.dns_name },
+        { name = "APP_SERVICE_HOST", value = "http://${aws_lb.internal.dns_name}" },
+        { name = "NOTIF_SERVICE_HOST", value = "http://${aws_lb.internal.dns_name}" },
       ]
     }
 

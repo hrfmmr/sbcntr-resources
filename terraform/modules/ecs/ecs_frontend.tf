@@ -23,6 +23,11 @@ resource "aws_ecs_task_definition" "sbcntr_frontend" {
   task_role_arn      = aws_iam_role.sbcntr_task.arn
   execution_role_arn = aws_iam_role.sbcntr_task_exec.arn
 
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "ARM64"
+  }
+
   lifecycle {
     ignore_changes = all
   }
