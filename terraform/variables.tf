@@ -5,6 +5,7 @@ variable "aws_region" {
   default = "ap-northeast-1"
 }
 
+# bastion
 variable "ssh_public_key" {
   type = string
 }
@@ -17,6 +18,7 @@ variable "ec2_bastion_ami" {
   type = string
 }
 
+# VPCe
 variable "vpc_interface_endpoints" {
   type = list(string)
   default = [
@@ -26,4 +28,17 @@ variable "vpc_interface_endpoints" {
     "ssm",
     "ssmmessages",
   ]
+}
+
+# DB
+variable "db_name" {
+  type = string
+}
+
+variable "db_username" {
+  type = string
+}
+
+variable "db_pass" {
+  type = string
 }

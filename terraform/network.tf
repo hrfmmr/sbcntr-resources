@@ -185,13 +185,6 @@ resource "aws_route_table_association" "sbcntr_route_db_association1" {
   subnet_id      = aws_subnet.sbcntr_subnet_private_db1[each.key].id
 }
 
-# TODO:
-# resource "aws_ec2_transit_gateway_vpc_attachment" "sbcntr_vpcgw_attachment" {
-# vpc_id             = aws_internet_gateway.sbcntr_igw.id
-# subnet_ids         = [aws_subnet.example.id]
-# transit_gateway_id = aws_ec2_transit_gateway.example.id
-# }
-
 # Security groups
 
 ## DB用セキュリティグループ
@@ -212,27 +205,3 @@ resource "aws_security_group" "sbcntr_sg_db" {
     Name = "sbcntr-sg-db"
   }
 }
-
-# ルール紐付け
-
-## Back container -> DB
-# resource "aws_security_group_rule" "sbcntr_sg_db_from_sg_container_tcp" {
-# security_group_id        = aws_security_group.sbcntr_sg_db.id
-# type                     = "ingress"
-# protocol                 = "tcp"
-# from_port                = 3306
-# to_port                  = 3306
-# source_security_group_id = aws_security_group.sbcntr_sg_container.id
-# description              = "MySQL protocol from backend App"
-# }
-
-## Front container -> DB
-# resource "aws_security_group_rule" "sbcntr_sg_db_from_sg_front_container_tcp" {
-# security_group_id        = aws_security_group.sbcntr_sg_db.id
-# type                     = "ingress"
-# protocol                 = "tcp"
-# from_port                = 3306
-# to_port                  = 3306
-# source_security_group_id = aws_security_group.sbcntr_sg_front_container.id
-# description              = "MySQL protocol from frontend App"
-# }
