@@ -1,3 +1,7 @@
 output "bastion_ec2_ip" {
-  value = aws_instance.bastion_ec2.public_dns
+  value = module.bastion.bastion_ec2_ip
+}
+
+output "rds_db_endpoint" {
+  value = module.rds.db_endpoint
 }
