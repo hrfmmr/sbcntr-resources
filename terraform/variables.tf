@@ -6,6 +6,10 @@ variable "aws_region" {
 }
 
 # bastion
+variable "ssh_key_name" {
+  type = string
+}
+
 variable "ssh_public_key" {
   type = string
 }
@@ -16,18 +20,6 @@ variable "bastion_ssh_allowed_ips" {
 
 variable "ec2_bastion_ami" {
   type = string
-}
-
-# VPCe
-variable "vpc_interface_endpoints" {
-  type = list(string)
-  default = [
-    "ecr.api",
-    "ecr.dkr",
-    "logs",
-    "ssm",
-    "ssmmessages",
-  ]
 }
 
 # DB

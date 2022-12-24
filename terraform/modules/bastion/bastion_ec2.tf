@@ -1,6 +1,6 @@
 # SSH key
-resource "aws_key_pair" "admin" {
-  key_name   = "admin"
+resource "aws_key_pair" "key_bastion_ec2" {
+  key_name   = var.ssh_key_name
   public_key = var.ssh_public_key
   tags = {
     Name = "admin-ssh-key-pair"
@@ -15,10 +15,9 @@ resource "aws_instance" "bastion_ec2" {
   vpc_security_group_ids = [
     aws_security_group.sbcntr_sg_bastion.id
   ]
-  key_name = aws_key_pair.admin.key_name
+  key_name = aws_key_pair.key_bastion_ec2.key_name
 
   tags = {
     Name = "bastion-ec2"
   }
 }
-

@@ -4,7 +4,7 @@ resource "aws_vpc" "sbcntr_vpc" {
   enable_dns_support   = true
   instance_tenancy     = "default"
   tags = {
-    Name = "sbcntrVpc"
+    Name = "sbcntr-vpc"
   }
 }
 
@@ -185,23 +185,3 @@ resource "aws_route_table_association" "sbcntr_route_db_association1" {
   subnet_id      = aws_subnet.sbcntr_subnet_private_db1[each.key].id
 }
 
-# Security groups
-
-## DB用セキュリティグループ
-resource "aws_security_group" "sbcntr_sg_db" {
-  name        = "database"
-  description = "Security Group of database"
-  vpc_id      = aws_vpc.sbcntr_vpc.id
-
-  egress {
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic by default"
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-  }
-
-  tags = {
-    Name = "sbcntr-sg-db"
-  }
-}
