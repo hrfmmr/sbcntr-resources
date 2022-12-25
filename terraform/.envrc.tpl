@@ -5,4 +5,4 @@ export TF_VAR_bastion_ssh_allowed_ips=
 export TF_VAR_ec2_bastion_ami=
 export TF_VAR_db_name=
 export TF_VAR_db_username=
-export TF_VAR_db_pass=
+export TF_VAR_db_password=

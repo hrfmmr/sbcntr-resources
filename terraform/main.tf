@@ -1,3 +1,12 @@
+module "secrets" {
+  source = "./modules/secrets"
+
+  db_credentials = {
+    username = var.db_username
+    password = var.db_password
+  }
+}
+
 module "network" {
   source = "./modules/network"
 
@@ -27,7 +36,7 @@ module "rds" {
   ]
   db_name     = var.db_name
   db_username = var.db_username
-  db_pass     = var.db_pass
+  db_pass     = var.db_password
 }
 
 module "ecs" {
