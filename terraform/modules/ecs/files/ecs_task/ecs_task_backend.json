@@ -1,25 +1,26 @@
 [
-    {
-        "name": "${container_name}",
-        "image": "${image}",
-        "logConfiguration": {
-            "logDriver": "awslogs",
-            "options": {
-                "awslogs-group": "${awslogs-group}",
-                "awslogs-region": "${awslogs-region}",
-                "awslogs-stream-prefix": "${awslogs-prefix}"
-            }
-        },
-        "cpu": 256,
-        "memory": 512,
-        "essential": true,
-        "portMappings": [
-            {
-                "hostPort": 80,
-                "containerPort": 80,
-                "protocol": "tcp"
-            }
-        ]
-    }
+  {
+    "name": "${container_name}",
+    "image": "${image}",
+    "environment": ${environment},
+    "secrets": ${secrets},
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${awslogs-group}",
+        "awslogs-region": "${awslogs-region}",
+        "awslogs-stream-prefix": "${awslogs-prefix}"
+      }
+    },
+    "cpu": 256,
+    "memory": 512,
+    "essential": true,
+    "portMappings": [
+      {
+        "hostPort": 80,
+        "containerPort": 80,
+        "protocol": "tcp"
+      }
+    ]
+  }
 ]
-

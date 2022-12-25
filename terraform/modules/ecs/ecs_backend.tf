@@ -4,6 +4,8 @@ resource "aws_ecs_task_definition" "sbcntr_backend" {
   container_definitions = templatefile(local.task_def.backend.container_def_file, {
     container_name = local.task_def.backend.container_name
     image          = local.task_def.backend.image_url
+    environment    = jsonencode(local.task_def.frontend.environment)
+    secrets        = jsonencode(local.task_def.frontend.secrets)
     awslogs-group  = local.task_def.backend.cwlogs_group
     awslogs-region = var.aws_region
     awslogs-prefix = local.task_def.backend.cwlogs_prefix

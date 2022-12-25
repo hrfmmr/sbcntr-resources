@@ -9,6 +9,7 @@ resource "aws_ecs_task_definition" "sbcntr_frontend" {
     container_name = local.task_def.frontend.container_name
     image          = local.task_def.frontend.image_url
     environment    = jsonencode(local.task_def.frontend.environment)
+    secrets        = jsonencode(local.task_def.frontend.secrets)
     awslogs-group  = local.task_def.frontend.cwlogs_group
     awslogs-region = var.aws_region
     awslogs-prefix = local.task_def.frontend.cwlogs_prefix

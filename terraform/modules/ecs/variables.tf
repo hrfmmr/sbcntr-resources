@@ -46,6 +46,28 @@ variable "ecs_task_trust_policy" {
   default = "./modules/ecs/files/iam_policy/ecs_task_trust_policy.json"
 }
 
+variable "ecs_task_exec_policy" {
+  type    = string
+  default = "./modules/ecs/files/iam_policy/ecs_task_exec_policy.json"
+}
+
+variable "db_name" {
+  type = string
+}
+
+variable "db_host" {
+  type = string
+}
+
+variable "db_secrets" {
+  type = list(
+    object({
+      name      = string,
+      valueFrom = string
+    })
+  )
+}
+
 variable "cluster_def" {
   type = map(map(string))
   default = {
@@ -71,7 +93,10 @@ locals {
         { name = "SESSION_SECRET_KEY", value = "41b678c65b37bf99c37bcab522802760" },
         { name = "APP_SERVICE_HOST", value = "http://${aws_lb.internal.dns_name}" },
         { name = "NOTIF_SERVICE_HOST", value = "http://${aws_lb.internal.dns_name}" },
+        { name = "DB_HOST", value = var.db_host },
+        { name = "DB_NAME", value = var.db_name },
       ]
+      secrets = var.db_secrets
     }
 
     backend = {
@@ -81,6 +106,11 @@ locals {
       image_url          = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/sbcntr-backend:v1"
       cwlogs_group       = "/ecs/sbcntr-backend-def"
       cwlogs_prefix      = "ecs"
+      environment = [
+        { name = "DB_HOST", value = var.db_host },
+        { name = "DB_NAME", value = var.db_name },
+      ]
+      secrets = var.db_secrets
     }
   }
 

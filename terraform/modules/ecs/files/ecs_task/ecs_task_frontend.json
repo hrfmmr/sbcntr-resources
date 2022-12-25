@@ -3,6 +3,7 @@
     "name": "${container_name}",
     "image": "${image}",
     "environment": ${environment},
+    "secrets": ${secrets},
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {

@@ -50,5 +50,9 @@ module "ecs" {
   public_subnet_ids = module.network.public_subnet_ids
   subnet_ids        = module.network.private_subnet_app_ids
 
+  db_host    = module.rds.db_host
+  db_name    = var.db_name
+  db_secrets = module.secrets.db_secrets
+
   sg_bastion_id = module.bastion.sg_bastion_id
 }

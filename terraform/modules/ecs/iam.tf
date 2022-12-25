@@ -24,3 +24,14 @@ resource "aws_iam_role_policy_attachment" "AmazonECSTaskExecutionRolePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
   role       = aws_iam_role.sbcntr_task_exec.id
 }
+
+
+resource "aws_iam_policy" "sbcntr_task_exec" {
+  name   = "sbcntr-task-exec-policy"
+  policy = file(var.ecs_task_exec_policy)
+}
+
+resource "aws_iam_role_policy_attachment" "sbcntr_task_exec" {
+  policy_arn = aws_iam_policy.sbcntr_task_exec.arn
+  role       = aws_iam_role.sbcntr_task_exec.id
+}
