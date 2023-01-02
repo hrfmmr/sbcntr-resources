@@ -7,5 +7,5 @@ timeout: 10m0s
 plugins:
   - name: tfstate
     config:
-      path: ../dummy.tfstate
+      path: ../../terraform.tfstate
   - name: ssm

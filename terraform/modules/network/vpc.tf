@@ -53,26 +53,26 @@ resource "aws_internet_gateway" "sbcntr_igw" {
 }
 
 # NAT Gateway
-resource "aws_eip" "sbcntr_nat_eip" {
-  for_each = toset(local.availability_zones)
+# resource "aws_eip" "sbcntr_nat_eip" {
+# for_each = toset(local.availability_zones)
 
-  vpc = true
+# vpc = true
 
-  tags = {
-    Name = "sbcntr-nat-${each.key}"
-  }
-}
+# tags = {
+# Name = "sbcntr-nat-${each.key}"
+# }
+# }
 
-resource "aws_nat_gateway" "sbcntr_nat" {
-  for_each = toset(local.availability_zones)
+# resource "aws_nat_gateway" "sbcntr_nat" {
+# for_each = toset(local.availability_zones)
 
-  subnet_id     = aws_subnet.sbcntr_subnet_public_ingress1[each.key].id
-  allocation_id = aws_eip.sbcntr_nat_eip[each.key].id
+# subnet_id     = aws_subnet.sbcntr_subnet_public_ingress1[each.key].id
+# allocation_id = aws_eip.sbcntr_nat_eip[each.key].id
 
-  tags = {
-    Name = "sbcntr-natgw-${each.key}"
-  }
-}
+# tags = {
+# Name = "sbcntr-natgw-${each.key}"
+# }
+# }
 
 
 # Private subnet(Container)
@@ -103,13 +103,13 @@ resource "aws_route_table" "sbcntr_route_app" {
   }
 }
 
-resource "aws_route" "sbcntr_route_app_natgw" {
-  for_each = toset(local.availability_zones)
+# resource "aws_route" "sbcntr_route_app_natgw" {
+# for_each = toset(local.availability_zones)
 
-  route_table_id         = aws_route_table.sbcntr_route_app[each.key].id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.sbcntr_nat[each.key].id
-}
+# route_table_id         = aws_route_table.sbcntr_route_app[each.key].id
+# destination_cidr_block = "0.0.0.0/0"
+# nat_gateway_id         = aws_nat_gateway.sbcntr_nat[each.key].id
+# }
 
 resource "aws_route_table_association" "sbcntr_route_app_association1" {
   for_each = toset(local.availability_zones)

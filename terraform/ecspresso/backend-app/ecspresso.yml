@@ -4,11 +4,8 @@ service: '{{ must_env `ECS_SERVICE` }}'
 service_definition: ecs-service-def.jsonnet
 task_definition: ecs-task-def.jsonnet
 timeout: 10m0s
-codedeploy:
-  application_name: '{{ must_env `CODEDEPLOY_APP_NAME` }}'
-  deployment_group_name: '{{ must_env `CODEDEPLOY_GROUP_NAME` }}'
 plugins:
   - name: tfstate
     config:
-      path: ../dummy.tfstate
+      path: ../../terraform.tfstate
   - name: ssm

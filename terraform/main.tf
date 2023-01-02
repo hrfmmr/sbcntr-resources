@@ -22,6 +22,10 @@ module "bastion" {
   ssh_allowed_ips = var.bastion_ssh_allowed_ips
   ec2_ami         = var.ec2_bastion_ami
   ec2_subnet_id   = module.network.public_subnet_ids[0]
+
+  depends_on = [
+    module.network,
+  ]
 }
 
 module "rds" {
@@ -37,6 +41,10 @@ module "rds" {
   db_name     = var.db_name
   db_username = var.db_username
   db_pass     = var.db_password
+
+  depends_on = [
+    module.network,
+  ]
 }
 
 module "ecs" {
@@ -50,9 +58,16 @@ module "ecs" {
   public_subnet_ids = module.network.public_subnet_ids
   subnet_ids        = module.network.private_subnet_app_ids
 
-  db_host    = module.rds.db_host
-  db_name    = var.db_name
-  db_secrets = module.secrets.db_secrets
+  # TODO: temporary disable rds module
+  # db_host = "sbcntr-db-mysql.ccnfvnxykgbh.ap-northeast-1.rds.amazonaws.com"
+  db_host = module.rds.db_host
+  db_name = var.db_name
 
   sg_bastion_id = module.bastion.sg_bastion_id
+
+  depends_on = [
+    module.secrets,
+    module.network,
+    module.bastion,
+  ]
 }

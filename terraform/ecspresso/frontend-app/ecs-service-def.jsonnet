@@ -19,7 +19,7 @@
     {
       containerName: 'app',
       containerPort: 80,
-      targetGroupArn: 'arn:aws:elasticloadbalancing:ap-northeast-1:190162224208:targetgroup/sbcntr-tg-frontend/4997821a2f525ebd',
+      targetGroupArn: '{{ or (env `LB_TG_FRONTEND` ``) (tfstate `module.ecs.aws_lb_target_group.frontend.arn`) }}',
     },
   ],
   networkConfiguration: {

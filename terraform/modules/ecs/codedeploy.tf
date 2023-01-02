@@ -11,14 +11,14 @@ resource "aws_iam_role_policy_attachment" "AWSCodeDeployRoleForECS" {
 
 # CodeDeploy
 resource "aws_codedeploy_app" "sbcntr_backend" {
-  name             = "sbcntr-ecs-backend-codedeploy"
+  name             = local.backend_def.codedeploy_app_name
   compute_platform = "ECS"
 }
 
 resource "aws_codedeploy_deployment_group" "sbcntr" {
   app_name               = aws_codedeploy_app.sbcntr_backend.name
   deployment_config_name = "CodeDeployDefault.ECSAllAtOnce"
-  deployment_group_name  = "sbcntr-ecs-backend-blue-green-deployment-group"
+  deployment_group_name  = local.backend_def.codedeploy_group_name
   service_role_arn       = aws_iam_role.ecs_codedeploy.arn
 
   auto_rollback_configuration {
@@ -45,8 +45,8 @@ resource "aws_codedeploy_deployment_group" "sbcntr" {
   }
 
   ecs_service {
-    cluster_name = aws_ecs_cluster.sbcntr_backend.name
-    service_name = aws_ecs_service.sbcntr_backend.name
+    cluster_name = local.backend_def.cluster_name
+    service_name = data.aws_ecs_service.sbcntr_backend.service_name
   }
 
   load_balancer_info {

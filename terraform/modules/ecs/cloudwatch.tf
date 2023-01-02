@@ -1,9 +1,9 @@
 # CloudWatch
 resource "aws_cloudwatch_log_group" "sbcntr" {
   for_each = {
-    frontend_task_def = local.task_def.frontend
-    backend_task_def  = local.task_def.backend
+    frontend_task = local.frontend_def.cwlogs_group
+    backend_task  = local.backend_def.cwlogs_group
   }
 
-  name = each.value.cwlogs_group
+  name = each.value
 }
