@@ -58,8 +58,6 @@ module "ecs" {
   public_subnet_ids = module.network.public_subnet_ids
   subnet_ids        = module.network.private_subnet_app_ids
 
-  # TODO: temporary disable rds module
-  # db_host = "sbcntr-db-mysql.ccnfvnxykgbh.ap-northeast-1.rds.amazonaws.com"
   db_host = module.rds.db_host
   db_name = var.db_name
 

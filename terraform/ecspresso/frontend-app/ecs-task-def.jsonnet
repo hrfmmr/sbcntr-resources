@@ -17,15 +17,11 @@
         },
         {
           name: 'DB_HOST',
-          // value: '{{ or (env `DB_HOST` ``) (tfstate `module.rds.aws_db_instance.sbcntr_db.address`) }}',
-          // TODO: temporary hard coding
-          value: 'sbcntr-db-mysql.ccnfvnxykgbh.ap-northeast-1.rds.amazonaws.com',
+          value: '{{ or (env `DB_HOST` ``) (tfstate `module.rds.aws_db_instance.sbcntr_db.address`) }}',
         },
         {
           name: 'DB_NAME',
-          // value: '{{ or (env `DB_NAME` ``) (tfstate `module.rds.aws_db_instance.sbcntr_db.db_name`) }}',
-          // TODO: temporary hard coding
-          value: 'sbcntrapp',
+          value: '{{ or (env `DB_NAME` ``) (tfstate `module.rds.aws_db_instance.sbcntr_db.db_name`) }}',
         },
         {
           name: 'DB_PASSWORD',
