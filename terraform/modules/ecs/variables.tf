@@ -83,6 +83,11 @@ variable "service_def" {
   }
 }
 
+# Log
+variable "s3_logs_bucket_arn" {
+  type = string
+}
+
 locals {
   frontend_def = {
     cluster_name = var.cluster_def.frontend.name
@@ -93,6 +98,7 @@ locals {
     cluster_name          = var.cluster_def.backend.name
     service_name          = var.service_def.backend.name
     cwlogs_group          = "/ecs/sbcntr-backend-def"
+    cwlogs_group_firelens = "/ecs/sbcntr-firelens-container"
     codedeploy_app_name   = "sbcntr-ecs-backend-codedeploy"
     codedeploy_group_name = "sbcntr-ecs-backend-blue-green-deployment-group"
   }

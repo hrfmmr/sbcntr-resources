@@ -12,7 +12,7 @@ resource "null_resource" "ecspresso_backend" {
   }
 
   provisioner "local-exec" {
-    command     = "ecspresso deploy --no-wait --debug"
+    command     = "ecspresso deploy --no-wait"
     working_dir = "./ecspresso/backend-app"
     environment = {
       # Common
@@ -20,11 +20,13 @@ resource "null_resource" "ecspresso_backend" {
       ECS_CLUSTER    = local.backend_def.cluster_name,
       ECS_SERVICE    = local.backend_def.service_name,
       # Task
-      CW_LOG_GROUP_ECS_TASK_BACKEND = local.backend_def.cwlogs_group,
-      ECS_TASK_EXEC_ROLE_ARN        = aws_iam_role.sbcntr_task_exec.arn,
-      ECS_TASK_ROLE_ARN             = aws_iam_role.sbcntr_task.arn,
-      DB_HOST                       = var.db_host,
-      DB_NAME                       = var.db_name,
+      CW_LOG_GROUP_ECS_TASK_BACKEND          = local.backend_def.cwlogs_group,
+      CW_LOG_GROUP_ECS_TASK_BACKEND_FIRELENS = local.backend_def.cwlogs_group_firelens,
+      S3_BUCKET_ECS_TASK_BACKEND_LOGS        = var.s3_logs_bucket_arn
+      ECS_TASK_EXEC_ROLE_ARN                 = aws_iam_role.sbcntr_task_exec.arn,
+      ECS_TASK_ROLE_ARN                      = aws_iam_role.sbcntr_task.arn,
+      DB_HOST                                = var.db_host,
+      DB_NAME                                = var.db_name,
       # Service
       LB_TG_INTERNAL_BLUE = aws_lb_target_group.internal_blue.arn,
       SG_BACKEND_APP      = aws_security_group.sbcntr_sg_container.id,

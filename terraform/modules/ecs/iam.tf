@@ -5,8 +5,10 @@ resource "aws_iam_role" "sbcntr_task" {
 }
 
 resource "aws_iam_policy" "sbcntr_task" {
-  name   = "sbcntr-task-policy"
-  policy = file(var.ecs_task_policy)
+  name = "sbcntr-task-policy"
+  policy = templatefile(var.ecs_task_policy, {
+    s3_logs_bucket_arn = var.s3_logs_bucket_arn
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "sbcntr_task" {
