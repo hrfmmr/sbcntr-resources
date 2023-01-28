@@ -59,19 +59,26 @@
         },
         {
           name: 'LOG_BUCKET_NAME',
-          value: '{{ or (env `S3_BUCKET_ECS_TASK_BACKEND_LOGS` ``) (tfstate `aws_s3_bucket.sbcntr_logs.arn`) }}',
+          value: '{{ or (env `S3_BUCKET_ECS_TASK_BACKEND_LOGS` ``) (tfstate `aws_s3_bucket.sbcntr_logs.bucket`) }}',
         },
         {
           name: 'LOG_GROUP_NAME',
-          value: '{{ or (env `CW_LOG_GROUP_ECS_TASK_BACKEND` ``) (tfstate `module.ecs.aws_cloudwatch_log_group.sbcntr['backend_task'].name`) }}',
+          value: "{{ or (env `CW_LOG_GROUP_ECS_TASK_BACKEND` ``) (tfstate `module.ecs.aws_cloudwatch_log_group.sbcntr['backend_task'].name`) }}",
         },
       ],
       logConfiguration: {
         logDriver: 'awslogs',
         options: {
-          'awslogs-group': "{{ or (env `CW_LOG_GROUP_ECS_TASK_BACKEND_FIRELENS` ``) (tfstate  `module.ecs.aws_cloudwatch_log_group.sbcntr-firelens-container.name`) }}",
+          'awslogs-group': '{{ or (env `CW_LOG_GROUP_ECS_TASK_BACKEND_FIRELENS` ``) (tfstate  `module.ecs.aws_cloudwatch_log_group.sbcntr_firelens_container.name`) }}',
           'awslogs-region': 'ap-northeast-1',
           'awslogs-stream-prefix': 'firelens',
+        },
+      },
+      firelensConfiguration: {
+        type: 'fluentbit',
+        options: {
+          'config-file-type': 'file',
+          'config-file-value': '/fluent-bit/custom.conf',
         },
       },
     },

@@ -8,6 +8,6 @@ resource "aws_cloudwatch_log_group" "sbcntr" {
   name = each.value
 }
 
-resource "aws_cloudwatch_log_group" "sbcntr-firelens-container" {
+resource "aws_cloudwatch_log_group" "sbcntr_firelens_container" {
   name = local.backend_def.cwlogs_group_firelens
 }

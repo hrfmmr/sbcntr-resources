@@ -20,9 +20,9 @@ resource "null_resource" "ecspresso_backend" {
       ECS_CLUSTER    = local.backend_def.cluster_name,
       ECS_SERVICE    = local.backend_def.service_name,
       # Task
-      CW_LOG_GROUP_ECS_TASK_BACKEND          = local.backend_def.cwlogs_group,
-      CW_LOG_GROUP_ECS_TASK_BACKEND_FIRELENS = local.backend_def.cwlogs_group_firelens,
-      S3_BUCKET_ECS_TASK_BACKEND_LOGS        = var.s3_logs_bucket_arn
+      CW_LOG_GROUP_ECS_TASK_BACKEND          = aws_cloudwatch_log_group.sbcntr["backend_task"].name,
+      CW_LOG_GROUP_ECS_TASK_BACKEND_FIRELENS = aws_cloudwatch_log_group.sbcntr_firelens_container.name,
+      S3_BUCKET_ECS_TASK_BACKEND_LOGS        = var.s3_logs_bucket
       ECS_TASK_EXEC_ROLE_ARN                 = aws_iam_role.sbcntr_task_exec.arn,
       ECS_TASK_ROLE_ARN                      = aws_iam_role.sbcntr_task.arn,
       DB_HOST                                = var.db_host,

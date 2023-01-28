@@ -84,7 +84,7 @@ variable "service_def" {
 }
 
 # Log
-variable "s3_logs_bucket_arn" {
+variable "s3_logs_bucket" {
   type = string
 }
 
