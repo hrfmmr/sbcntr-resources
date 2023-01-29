@@ -63,7 +63,8 @@ module "ecs" {
 
   sg_bastion_id = module.bastion.sg_bastion_id
 
-  s3_logs_bucket = aws_s3_bucket.sbcntr_logs.bucket
+  s3_logs_bucket     = aws_s3_bucket.sbcntr_logs.bucket
+  s3_logs_bucket_arn = aws_s3_bucket.sbcntr_logs.arn
 
   depends_on = [
     module.secrets,

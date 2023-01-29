@@ -88,6 +88,10 @@ variable "s3_logs_bucket" {
   type = string
 }
 
+variable "s3_logs_bucket_arn" {
+  type = string
+}
+
 locals {
   frontend_def = {
     cluster_name = var.cluster_def.frontend.name
